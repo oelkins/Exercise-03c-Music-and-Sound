@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://Paddle/Paddle.gd" type="Script" id=1]
 [ext_resource path="res://Ball/Ball_Container.gd" type="Script" id=2]
@@ -12,8 +12,14 @@
 [ext_resource path="res://Ball/Trail_Container.gd" type="Script" id=10]
 [ext_resource path="res://Camera/WorldEnvironment.gd" type="Script" id=11]
 [ext_resource path="res://Paddle/Face.gd" type="Script" id=12]
+[ext_resource path="res://Assets/mouth.png" type="Texture" id=13]
+[ext_resource path="res://Assets/pupil.png" type="Texture" id=14]
+[ext_resource path="res://Audio/3C.ogg" type="AudioStream" id=15]
 [ext_resource path="res://Assets/Datalegreya-Thin.otf" type="DynamicFontData" id=16]
 [ext_resource path="res://Audio/Music.gd" type="Script" id=17]
+[ext_resource path="res://Audio/paddle-2.wav" type="AudioStream" id=18]
+[ext_resource path="res://Audio/brick.wav" type="AudioStream" id=19]
+[ext_resource path="res://Audio/wall.wav" type="AudioStream" id=21]
 
 [sub_resource type="Gradient" id=1]
 colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 0 )
@@ -57,28 +63,30 @@ hue_variation_curve = SubResource( 4 )
 [sub_resource type="RectangleShape2D" id=8]
 extents = Vector2( 50, 10 )
 
-[sub_resource type="Curve" id=9]
+[sub_resource type="ImageTexture" id=9]
+
+[sub_resource type="Curve" id=10]
 min_value = -360.0
 max_value = 360.0
 _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, -360 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=10]
-curve = SubResource( 9 )
+[sub_resource type="CurveTexture" id=11]
+curve = SubResource( 10 )
 
-[sub_resource type="Gradient" id=11]
+[sub_resource type="Gradient" id=12]
 offsets = PoolRealArray( 0, 0.451429, 1 )
 colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 )
 
-[sub_resource type="GradientTexture" id=12]
-gradient = SubResource( 11 )
+[sub_resource type="GradientTexture" id=13]
+gradient = SubResource( 12 )
 
-[sub_resource type="Curve" id=13]
+[sub_resource type="Curve" id=14]
 _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.497436, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=14]
-curve = SubResource( 13 )
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 14 )
 
-[sub_resource type="ParticlesMaterial" id=15]
+[sub_resource type="ParticlesMaterial" id=16]
 flag_disable_z = true
 direction = Vector3( 0, -1, 0 )
 spread = 60.0
@@ -90,24 +98,33 @@ angular_velocity_random = 1.0
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 angle_random = 0.5
-angle_curve = SubResource( 10 )
+angle_curve = SubResource( 11 )
 scale = 0.5
 scale_random = 0.5
-scale_curve = SubResource( 14 )
-color_ramp = SubResource( 12 )
+scale_curve = SubResource( 15 )
+color_ramp = SubResource( 13 )
 hue_variation = 0.7
 hue_variation_random = 0.25
 
-[sub_resource type="DynamicFont" id=16]
+[sub_resource type="DynamicFont" id=17]
 size = 36
 font_data = ExtResource( 16 )
+
+[sub_resource type="Environment" id=18]
+dof_blur_near_enabled = true
+dof_blur_near_distance = 1.3
+glow_enabled = true
+glow_bloom = 0.15
+glow_blend_mode = 0
+glow_hdr_threshold = 0.0
+glow_bicubic_upscale = true
 
 [node name="Game" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
-margin_left = -200.0
+margin_left = -204.0
 margin_top = -200.0
-margin_right = 1275.0
+margin_right = 1271.0
 margin_bottom = 968.0
 color = Color( 0, 0, 0, 1 )
 script = ExtResource( 6 )
@@ -160,13 +177,41 @@ shape = SubResource( 8 )
 [node name="Face" type="Node2D" parent="Paddle_Container/Paddle"]
 script = ExtResource( 12 )
 
+[node name="Eye_left" type="Sprite" parent="Paddle_Container/Paddle/Face"]
+position = Vector2( -35, -10 )
+
+[node name="Eye_right" type="Sprite" parent="Paddle_Container/Paddle/Face"]
+position = Vector2( 35, -10 )
+
+[node name="Pupil_left" type="Node2D" parent="Paddle_Container/Paddle/Face"]
+position = Vector2( -35, -10 )
+
+[node name="Sprite" type="Sprite" parent="Paddle_Container/Paddle/Face/Pupil_left"]
+position = Vector2( -3, -4 )
+texture = ExtResource( 14 )
+
+[node name="Pupil_right" type="Node2D" parent="Paddle_Container/Paddle/Face"]
+position = Vector2( 35, -10 )
+
+[node name="Sprite" type="Sprite" parent="Paddle_Container/Paddle/Face/Pupil_right"]
+position = Vector2( -5, 0 )
+texture = ExtResource( 14 )
+
+[node name="Mouth" type="Sprite" parent="Paddle_Container/Paddle/Face"]
+position = Vector2( 0, 20 )
+texture = SubResource( 9 )
+
+[node name="Sprite" type="Sprite" parent="Paddle_Container/Paddle/Face/Mouth"]
+position = Vector2( 3, 8 )
+texture = ExtResource( 13 )
+
 [node name="Particles2D" type="Particles2D" parent="Paddle_Container"]
 position = Vector2( 507, 700 )
 emitting = false
 amount = 6
 lifetime = 0.4
 one_shot = true
-process_material = SubResource( 15 )
+process_material = SubResource( 16 )
 texture = ExtResource( 7 )
 
 [node name="Trail_Container" type="Node2D" parent="."]
@@ -187,7 +232,7 @@ script = ExtResource( 9 )
 [node name="Countdown" type="Label" parent="Starting"]
 margin_right = 1024.0
 margin_bottom = 100.0
-custom_fonts/font = SubResource( 16 )
+custom_fonts/font = SubResource( 17 )
 text = "Starting in: "
 align = 1
 valign = 1
@@ -196,16 +241,27 @@ __meta__ = {
 }
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 18 )
 script = ExtResource( 11 )
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 15 )
+volume_db = -6.0
+autoplay = true
 script = ExtResource( 17 )
 
 [node name="Effect_Paddle" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 18 )
+volume_db = 2.0
+autoplay = true
 
 [node name="Effect_Wall" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 21 )
+autoplay = true
 
 [node name="Effect_Brick" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 19 )
+autoplay = true
 
 [node name="HUD" type="Control" parent="."]
 visible = false
